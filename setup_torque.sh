@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 TORQUE=/var/spool/torque
+whoami
 
 # Kill any existing servers
 /etc/init.d/torque-mom stop
@@ -28,8 +29,9 @@ echo "$(hostname)" > ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
 # NOTE: Simplify?
-echo "\$pbsserver $(hostname)
-\$logevent   255" > ${TORQUE}/mom_priv/config
+#echo "\$pbsserver $(hostname)
+#\$logevent   255" > ${TORQUE}/mom_priv/config
+echo $(hostname) > ${TORQUE}/mom_priv/config
 
 # Restart server
 /etc/init.d/torque-server start
