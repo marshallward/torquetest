@@ -38,13 +38,20 @@ echo "\$pbsserver $(hostname)
 
 # Configure the queue
 qmgr -c "set server scheduling = true"
-qmgr -c "set server acl_hosts = $(hostname)"
-qmgr -c "create queue batch queue_type = execution"
+qmgr -c "set server keep_completed = 300"
+qmgr -c "set server mom_job_sync = true"
+
+#qmgr -c "set server acl_hosts = $(hostname)"
+qmgr -c "create queue batch"
+qmgr -c "set queue batch queue_type = execution"
 qmgr -c "set queue batch started = true"
 qmgr -c "set queue batch enabled = true"
 qmgr -c "set queue batch resources_default.walltime = 3600"
 qmgr -c "set queue batch resources_default.nodes = 1"
 qmgr -c "set server default_queue = batch"
+
+qmgr -c "set server submit_hosts = $(hostname)"
+qmgr -c "set server allow_node_submit = true"
 
 ## Restart the server (do I need this?)
 #killall -9 pbs_server
