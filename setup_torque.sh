@@ -1,12 +1,15 @@
 #!/bin/bash
 set -x
 TORQUE=/var/spool/torque
-whoami
 
 # Kill any existing servers
-/etc/init.d/torque-mom stop
-/etc/init.d/torque-scheduler stop
-/etc/init.d/torque-server stop
+#/etc/init.d/torque-mom stop
+#/etc/init.d/torque-scheduler stop
+#/etc/init.d/torque-server stop
+killall pbs_server
+killall pbs_sched
+killall pbs_mom
+killall trqauthd
 
 # Ensure that `/var/spool/torque/server_name` matches your node
 
@@ -15,14 +18,13 @@ pbs_server -f -t create
 killall pbs_server
 
 ## Start the TORQUE queue authentication daemon
-# Arch only?
-#trqauthd
+service trqauthd restart
 
 # Do I need these?
-echo $(hostname) > /etc/torque/server_name
-echo $(hostname) > /var/spool/torque/server_priv/acl_svr/acl_hosts
-echo root@$(hostname) > /var/spool/torque/server_priv/acl_svr/operators
-echo root@$(hostname) > /var/spool/torque/server_priv/acl_svr/managers
+echo $(hostname -f) > ${TORQUE}/server_name
+echo $(hostname -f) > ${TORQUE}/server_priv/acl_svr/acl_hosts
+echo root@$(hostname -f) > /var/spool/torque/server_priv/acl_svr/operators
+echo root@$(hostname -f) > /var/spool/torque/server_priv/acl_svr/managers
 
 # Update hosts
 echo "127.0.0.1 $(hostname)" >> /etc/hosts
@@ -41,12 +43,12 @@ echo $(hostname) > ${TORQUE}/mom_priv/config
 /etc/init.d/torque-scheduler start
 /etc/init.d/torque-mom start
 
-# Configure the queue
+# Server config
 qmgr -c "set server scheduling = true"
 qmgr -c "set server keep_completed = 300"
 qmgr -c "set server mom_job_sync = true"
 
-#qmgr -c "set server acl_hosts = $(hostname)"
+# Default queue
 qmgr -c "create queue batch"
 qmgr -c "set queue batch queue_type = execution"
 qmgr -c "set queue batch started = true"
@@ -55,15 +57,23 @@ qmgr -c "set queue batch resources_default.walltime = 3600"
 qmgr -c "set queue batch resources_default.nodes = 1"
 qmgr -c "set server default_queue = batch"
 
-qmgr -c "set server submit_hosts = $(hostname)"
-qmgr -c "set server allow_node_submit = true"
+#qmgr -c "set server submit_hosts = $(hostname)"
+#qmgr -c "set server allow_node_submit = true"
+
+service pbs_sched start
+
+# MOM setup
 
 ## Restart the server (do I need this?)
 #killall -9 pbs_server
 #pbs_server
+service pbs_server restart
 #
 ## Start the clients
 #pbs_mom
 #
 ## Start the scheduler
 #pbs_sched
+
+# Check the nodes
+pbsnodes
