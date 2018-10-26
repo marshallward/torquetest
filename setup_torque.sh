@@ -16,25 +16,27 @@ pbs_server -f -t create
 killall pbs_server
 
 ## Start the TORQUE queue authentication daemon
-service trqauthd restart
+#service trqauthd restart
+#server=$(hostname -f)
+server=localhost
 
 # Do I need these?
-echo $(hostname -f) > /etc/torque/server_name
-echo $(hostname -f) > ${TORQUE}/server_priv/acl_svr/acl_hosts
-echo root@$(hostname -f) > ${TORQUE}/server_priv/acl_svr/operators
-echo root@$(hostname -f) > ${TORQUE}/server_priv/acl_svr/managers
+echo ${server} > /etc/torque/server_name
+echo ${server} > ${TORQUE}/server_priv/acl_svr/acl_hosts
+echo root@${server} > ${TORQUE}/server_priv/acl_svr/operators
+echo root@${server} > ${TORQUE}/server_priv/acl_svr/managers
 
 # Update hosts
-echo "127.0.0.1 $(hostname -f)" >> /etc/hosts
+echo "127.0.0.1 ${server}" >> /etc/hosts
 
 # Add host as a compute node
-echo "$(hostname -f)" > ${TORQUE}/server_priv/nodes
+echo "${server}" > ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
 # NOTE: Simplify?
 #echo "\$pbsserver $(hostname)
 #\$logevent   255" > ${TORQUE}/mom_priv/config
-echo $(hostname -f) > ${TORQUE}/mom_priv/config
+echo ${server} > ${TORQUE}/mom_priv/config
 
 # Restart server
 /etc/init.d/torque-server start
