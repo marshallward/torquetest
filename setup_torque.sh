@@ -57,26 +57,7 @@ qmgr -c "set queue batch resources_default.walltime = 3600"
 qmgr -c "set queue batch resources_default.nodes = 1"
 qmgr -c "set server default_queue = batch"
 
-#qmgr -c "set server submit_hosts = $(hostname)"
-#qmgr -c "set server allow_node_submit = true"
+qmgr -c "set server submit_hosts = ${server}"
+qmgr -c "set server allow_node_submit = true"
 
-# Parse the inevitable error:
-grep Unauthorized /var/spool/torque/server_logs/*
-
-service pbs_sched start
-
-# MOM setup
-
-## Restart the server (do I need this?)
-#killall -9 pbs_server
-#pbs_server
-service pbs_server restart
-#
-## Start the clients
-#pbs_mom
-#
-## Start the scheduler
-#pbs_sched
-
-# Check the nodes
 pbsnodes
