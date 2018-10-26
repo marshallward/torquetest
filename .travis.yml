@@ -1,0 +1,21 @@
+language: python
+python:
+    - "2.7"
+    - "3.4"
+    - "3.5"
+before_install:
+    - sudo apt-get install torque-server torque-client torque-mom torque-pam
+install:
+    - sudo ./setup_torque.sh
+#    - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then
+#        pip install ordereddict; fi
+#    - pip install .
+#before_script:
+#    - cd test
+#    - pip install -r requirements_test.txt
+script:
+    - echo "sleep 10" | qsub
+#after_success:
+#    - coverage report -m
+#    - coveralls
+#sudo: False
