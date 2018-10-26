@@ -3,42 +3,55 @@ set -x
 TORQUE=/var/spool/torque
 
 # Kill any existing servers
-killall pbs_sched
-killall pbs_mom
-killall trqauthd
-killall pbs_server
+/etc/init.d/torque-mom stop
+/etc/init.d/torque-scheduler stop
+/etc/init.d/torque-server stop
 
 # Ensure that `/var/spool/torque/server_name` matches your node
 
-# Create the TORQUE server
+# Create and shut down the TORQUE server in order to set up the directories
 pbs_server -f -t create
+killall pbs_server
 
-# Start the TORQUE queue authentication daemon
-trqauthd
+## Start the TORQUE queue authentication daemon
+# Arch only?
+#trqauthd
 
-# Configure the queue
-qmgr -c "set server acl_hosts = bevelle"
-qmgr -c "set server scheduling=true"
-qmgr -c "create queue batch queue_type=execution"
-qmgr -c "set queue batch started=true"
-qmgr -c "set queue batch enabled=true"
-qmgr -c "set queue batch resources_default.nodes=1"
-qmgr -c "set queue batch resources_default.walltime=3600"
-qmgr -c "set server default_queue=batch"
+# Do I need these?
+echo $(hostname) > /etc/torque/server_name
+echo $(hostname) > /var/spool/torque/server_priv/acl_svr/acl_hosts
+echo root@$(hostname) > /var/spool/torque/server_priv/acl_svr/operators
+echo root@$(hostname) > /var/spool/torque/server_priv/acl_svr/managers
 
 # Add host as a compute node
 echo "$(hostname)" > ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
+# NOTE: Simplify?
 echo "\$pbsserver $(hostname)
 \$logevent   255" > ${TORQUE}/mom_priv/config
 
-# Restart the server (do I need this?)
-killall -9 pbs_server
-pbs_server
+# Restart server
+/etc/init.d/torque-server start
+/etc/init.d/torque-scheduler start
+/etc/init.d/torque-mom start
 
-# Start the clients
-pbs_mom
+# Configure the queue
+qmgr -c "set server scheduling = true"
+qmgr -c "set server acl_hosts = $(hostname)"
+qmgr -c "create queue batch queue_type = execution"
+qmgr -c "set queue batch started = true"
+qmgr -c "set queue batch enabled = true"
+qmgr -c "set queue batch resources_default.walltime = 3600"
+qmgr -c "set queue batch resources_default.nodes = 1"
+qmgr -c "set server default_queue = batch"
 
-# Start the scheduler
-pbs_sched
+## Restart the server (do I need this?)
+#killall -9 pbs_server
+#pbs_server
+#
+## Start the clients
+#pbs_mom
+#
+## Start the scheduler
+#pbs_sched
