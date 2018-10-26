@@ -29,8 +29,6 @@ qmgr -c "set server default_queue=batch"
 # Add host as a compute node
 echo "$(hostname)" > ${TORQUE}/server_priv/nodes
 
-#----
-
 # Set up client configuration
 echo "\$pbsserver $(hostname)
 \$logevent   255" > ${TORQUE}/mom_priv/config
