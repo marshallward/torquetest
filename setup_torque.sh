@@ -3,15 +3,13 @@ set -x
 TORQUE=/var/spool/torque
 
 # Kill any existing servers
-#/etc/init.d/torque-mom stop
-#/etc/init.d/torque-scheduler stop
-#/etc/init.d/torque-server stop
-killall pbs_server
-killall pbs_sched
-killall pbs_mom
-killall trqauthd
-
-# Ensure that `/var/spool/torque/server_name` matches your node
+/etc/init.d/torque-mom stop
+/etc/init.d/torque-scheduler stop
+/etc/init.d/torque-server stop
+#killall pbs_server
+#killall pbs_sched
+#killall pbs_mom
+#killall trqauthd
 
 # Create and shut down the TORQUE server in order to set up the directories
 pbs_server -f -t create
@@ -21,22 +19,22 @@ killall pbs_server
 service trqauthd restart
 
 # Do I need these?
-echo $(hostname -f) > ${TORQUE}/server_name
+echo $(hostname -f) > /etc/torque/server_name
 echo $(hostname -f) > ${TORQUE}/server_priv/acl_svr/acl_hosts
-echo root@$(hostname -f) > /var/spool/torque/server_priv/acl_svr/operators
-echo root@$(hostname -f) > /var/spool/torque/server_priv/acl_svr/managers
+echo root@$(hostname -f) > ${TORQUE}/server_priv/acl_svr/operators
+echo root@$(hostname -f) > ${TORQUE}/server_priv/acl_svr/managers
 
 # Update hosts
-echo "127.0.0.1 $(hostname)" >> /etc/hosts
+echo "127.0.0.1 $(hostname -f)" >> /etc/hosts
 
 # Add host as a compute node
-echo "$(hostname)" > ${TORQUE}/server_priv/nodes
+echo "$(hostname -f)" > ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
 # NOTE: Simplify?
 #echo "\$pbsserver $(hostname)
 #\$logevent   255" > ${TORQUE}/mom_priv/config
-echo $(hostname) > ${TORQUE}/mom_priv/config
+echo $(hostname -f) > ${TORQUE}/mom_priv/config
 
 # Restart server
 /etc/init.d/torque-server start
@@ -59,6 +57,9 @@ qmgr -c "set server default_queue = batch"
 
 #qmgr -c "set server submit_hosts = $(hostname)"
 #qmgr -c "set server allow_node_submit = true"
+
+# Parse the inevitable error:
+grep Unauthorized /var/spool/torque/server_logs/*
 
 service pbs_sched start
 
