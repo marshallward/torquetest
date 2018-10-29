@@ -8,7 +8,7 @@ install:
     #- pip install payu  # Use this when pip is up to date
     - git clone https://github.com/marshallward/payu.git
     - cd payu
-    - python setup.py install payu
+    - python setup.py install
     - cd ..
 #before_script:
 #    - cd test
