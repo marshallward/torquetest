@@ -17,7 +17,7 @@ before_script:
 script:
     - echo "sleep 10" | qsub
     #- payu
-    - coverage run --source payu payu
+    - coverage run --source payu $(which payu)
 #after_success:
 #    - coverage report -m
 #    - coveralls
