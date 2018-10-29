@@ -3,16 +3,15 @@ python:
     - "3.5"
 before_install:
     - sudo apt-get install torque-server torque-client torque-mom torque-pam
-install:
     - sudo ./setup_torque.sh
-#    - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then
-#        pip install ordereddict; fi
-#    - pip install .
+install:
+    - pip install payu  # Test the payu build
 #before_script:
 #    - cd test
 #    - pip install -r requirements_test.txt
 script:
     - echo "sleep 10" | qsub
+    - payu
 #after_success:
 #    - coverage report -m
 #    - coveralls

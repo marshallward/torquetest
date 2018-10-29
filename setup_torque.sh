@@ -6,17 +6,12 @@ TORQUE=/var/spool/torque
 /etc/init.d/torque-mom stop
 /etc/init.d/torque-scheduler stop
 /etc/init.d/torque-server stop
-#killall pbs_server
-#killall pbs_sched
-#killall pbs_mom
-#killall trqauthd
 
 # Create and shut down the TORQUE server in order to set up the directories
 pbs_server -f -t create
 killall pbs_server
 
 ## Start the TORQUE queue authentication daemon
-#service trqauthd restart
 #server=$(hostname -f)
 server=localhost
 
@@ -33,9 +28,6 @@ echo "127.0.0.1 ${server}" >> /etc/hosts
 echo "${server}" > ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
-# NOTE: Simplify?
-#echo "\$pbsserver $(hostname)
-#\$logevent   255" > ${TORQUE}/mom_priv/config
 echo ${server} > ${TORQUE}/mom_priv/config
 
 # Restart server
@@ -60,4 +52,5 @@ qmgr -c "set server default_queue = batch"
 qmgr -c "set server submit_hosts = ${server}"
 qmgr -c "set server allow_node_submit = true"
 
+# Check the available nodes
 pbsnodes
