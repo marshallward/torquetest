@@ -10,12 +10,14 @@ install:
     - cd payu
     - python setup.py install
     - cd ..
-#before_script:
+before_script:
 #    - cd test
-#    - pip install -r requirements_test.txt
+#    - pip install -r test/requirements_test.txt
+    - pip install -r payu/test/requirements_test.txt
 script:
     - echo "sleep 10" | qsub
-    - payu
+    #- payu
+    - coverage run --source payu payu
 #after_success:
 #    - coverage report -m
 #    - coveralls
