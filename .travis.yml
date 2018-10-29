@@ -5,7 +5,11 @@ before_install:
     - sudo apt-get install torque-server torque-client torque-mom torque-pam
     - sudo ./setup_torque.sh
 install:
-    - pip install payu  # Test the payu build
+    #- pip install payu  # Use this when pip is up to date
+    - git clone https://github.com/marshallward/payu.git
+    - cd payu
+    - python setup.py install payu
+    - cd ..
 #before_script:
 #    - cd test
 #    - pip install -r requirements_test.txt
