@@ -11,8 +11,8 @@ TORQUE=/var/spool/torque
 pbs_server -f -t create
 killall pbs_server
 
-# Test localhost ping
-ping localhost
+# Test localhost ping for 5 sec
+ping -w5 localhost
 
 ## Start the TORQUE queue authentication daemon
 #server=$(hostname -f)
