@@ -12,8 +12,9 @@ pbs_server -f -t create
 killall pbs_server
 
 ## Start the TORQUE queue authentication daemon
-server=$(hostname -f)
+#server=$(hostname -f)
 #server=localhost
+server=127.0.0.1
 
 # Do I need these?
 echo ${server} > /etc/torque/server_name
