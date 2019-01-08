@@ -25,6 +25,7 @@ echo root@${server} > ${TORQUE}/server_priv/acl_svr/managers
 
 # Update hosts
 echo "127.0.0.1 ${server}" >> /etc/hosts
+cat /etc/hosts
 
 # Add host as a compute node
 #echo "${server}" > ${TORQUE}/server_priv/nodes
