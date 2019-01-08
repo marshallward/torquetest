@@ -11,12 +11,10 @@ TORQUE=/var/spool/torque
 pbs_server -f -t create
 killall pbs_server
 
-# Test localhost ping for 5 sec
-ping -w5 localhost
-
 ## Start the TORQUE queue authentication daemon
 #server=$(hostname -f)
-server=localhost
+#server=localhost
+server=$(hostname)
 
 # Do I need these?
 #echo ${server} > /etc/torque/server_name
@@ -29,10 +27,13 @@ echo root@${server} > ${TORQUE}/server_priv/acl_svr/managers
 echo "127.0.0.1 ${server}" >> /etc/hosts
 
 # Add host as a compute node
-echo "${server}" > ${TORQUE}/server_priv/nodes
+#echo "${server}" > ${TORQUE}/server_priv/nodes
+echo "localhost np=2" > ${TORQUE}/server_priv/nodes
+echo ${server} >> ${TORQUE}/server_priv/nodes
 
 # Set up client configuration
-echo ${server} > ${TORQUE}/mom_priv/config
+#echo ${server} > ${TORQUE}/mom_priv/config
+echo "pbs_server = 127.0.0.1" > ${TORQUE}/mom_priv/config
 
 # Restart server
 /etc/init.d/torque-server start
